@@ -1,0 +1,6 @@
+flask
+faiss-cpu
+ollama
+bs4
+requests
+numpy

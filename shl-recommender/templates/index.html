@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SHL Assessment Recommender</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>🔍 SHL Assessment Recommender</h1>
+
+  <label><input type="radio" name="inputType" value="text" checked> Enter Text</label>
+  <label><input type="radio" name="inputType" value="url"> Job Description URL</label>
+
+  <textarea id="input" placeholder="Enter query or JD URL..."></textarea>
+  <button onclick="getRecommendations()">Get Recommendations</button>
+
+  <div id="results"></div>
+
+  <script>
+    async function getRecommendations() {
+      const input = document.getElementById('input').value;
+      const type = document.querySelector('input[name="inputType"]:checked').value;
+
+      const res = await fetch('/recommend', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ query: input, is_url: type === "url" })
+      });
+
+      const data = await res.json();
+      const div = document.getElementById('results');
+      div.innerHTML = "<h2>Recommended Assessments</h2><table><tr><th>#</th><th>Name</th><th>Remote</th><th>Adaptive</th><th>Duration</th><th>Type</th></tr>";
+
+      data.forEach((item, i) => {
+        div.innerHTML += `
+          <tr>
+            <td>${i+1}</td>
+            <td><a href="${item.url}" target="_blank">${item.name}</a></td>
+            <td>${item.remote}</td>
+            <td>${item.adaptive}</td>
+            <td>${item.duration}</td>
+            <td>${item.type}</td>
+          </tr>`;
+      });
+      div.innerHTML += "</table>";
+    }
+  </script>
+</body>
+</html>
